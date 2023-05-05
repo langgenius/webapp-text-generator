@@ -13,6 +13,7 @@ export type PromptVariable = {
   name: string,
   type: "string" | "number" | "select",
   default?: string | number,
+  required?: boolean
   options?: string[]
   max_length: number
 }

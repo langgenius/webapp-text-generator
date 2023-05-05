@@ -13,9 +13,16 @@ const translation = {
     refresh: '重新开始',
     search: '搜索',
     send: '发送',
+    copy: '复制',
     lineBreak: '换行',
     like: '赞同',
     dislike: '反对',
+  },
+  unit: {
+    char: '个字符',
+  },
+  actionMsg: {
+    copySuccessfully: '复制成功',
   }
 }
 

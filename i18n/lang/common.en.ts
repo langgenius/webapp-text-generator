@@ -13,9 +13,16 @@ const translation = {
     refresh: 'Restart',
     search: 'Search',
     send: 'Send',
+    copy: 'Copy',
     lineBreak: 'Line break',
     like: 'like',
     dislike: 'dislike',
+  },
+  unit: {
+    char: 'chars',
+  },
+  actionMsg: {
+    copySuccessfully: 'Copied successfully',
   }
 }
 
