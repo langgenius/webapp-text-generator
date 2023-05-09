@@ -16,6 +16,7 @@ import AppUnavailable from '@/app/components/app-unavailable'
 import { APP_ID, API_KEY, APP_INFO } from '@/config'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import Button from './base/button'
+import { userInputsFormToPromptVariables } from '@/utils/prompt'
 
 import s from './style.module.css'
 
@@ -120,10 +121,10 @@ const TextGeneration = () => {
     }
     (async () => {
       try {
-
         changeLanguage(APP_INFO.default_language)
 
-        const { variables: prompt_variables }: any = await fetchAppParams()
+        const { user_input_form }: any = await fetchAppParams()
+        const prompt_variables = userInputsFormToPromptVariables(user_input_form)
 
         setPromptConfig({
           prompt_template: '',
