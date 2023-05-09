@@ -216,16 +216,16 @@ const TextGeneration = () => {
     <>
       <div className={cn(isPC && 'flex', 'h-screen bg-gray-50')}>
         {/* Left */}
-        <div className={cn(isPC && 'w-[600px] max-w-[50%]', "shrink-0 relative flex flex-col p-8 pb-10 h-full border-r border-gray-100 bg-white")}>
+        <div className={cn(isPC ? 'w-[600px] max-w-[50%] p-8' : 'p-4', "shrink-0 relative flex flex-col pb-10 h-full border-r border-gray-100 bg-white")}>
           <div className='mb-6'>
             <div className='flex justify-between items-center'>
               <div className='flex items-center space-x-3'>
-                <div className={s.appIcon}></div>
+                <div className={cn(s.appIcon, 'shrink-0')}></div>
                 <div className='text-lg text-gray-800 font-semibold'>{APP_INFO.title}</div>
               </div>
               {!isPC && (
                 <Button
-                  className='!h-8 !px-3'
+                  className='shrink-0 !h-8 !px-3'
                   onClick={showResSidebar}
                 >
                   <div className='flex items-center space-x-2 text-primary-600 text-[13px] font-medium'>
