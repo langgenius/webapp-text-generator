@@ -1,7 +1,7 @@
 import { API_PREFIX } from '@/config'
 import Toast from '@/app/components/base/toast'
 
-const TIME_OUT = 100000
+const TIME_OUT = 5 * 60 * 1000 // five minutes
 
 const ContentType = {
   json: 'application/json',
@@ -186,7 +186,6 @@ export const ssePost = (url: string, fetchOptions: any, { onData, onCompleted, o
       if (!/^(2|3)\d{2}$/.test(res.status)) {
         // eslint-disable-next-line no-new
         new Promise(() => {
-          debugger
           res.json().then((data: any) => {
             Toast.notify({ type: 'error', message: data.message || 'Server Error' })
           })
