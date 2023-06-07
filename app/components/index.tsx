@@ -57,15 +57,28 @@ const TextGeneration = () => {
   }
 
   const checkCanSend = () => {
-    const inputLens = Object.values(inputs).length
-    const promptVariablesLens = promptConfig?.prompt_variables.length || 0
+    const prompt_variables = promptConfig?.prompt_variables
+    if (!prompt_variables || prompt_variables?.length === 0)
+      return true
 
-    const emytyInput = inputLens < promptVariablesLens || Object.values(inputs).find(v => !v)
-    if (emytyInput) {
+    let hasEmptyInput = false
+    const requiredVars = prompt_variables?.filter(({ key, name, required }) => {
+      const res = (!key || !key.trim()) || (!name || !name.trim()) || (required || required === undefined || required === null)
+      return res
+    }) || [] // compatible with old version
+    requiredVars.forEach(({ key }) => {
+      if (hasEmptyInput)
+        return
+
+      if (!inputs[key])
+        hasEmptyInput = true
+    })
+
+    if (hasEmptyInput) {
       logError(t('app.errorMessage.valueOfVarRequired'))
       return false
     }
-    return true
+    return !hasEmptyInput
   }
 
   const handleSend = async () => {
