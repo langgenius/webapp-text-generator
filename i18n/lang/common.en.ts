@@ -23,7 +23,7 @@ const translation = {
   },
   actionMsg: {
     copySuccessfully: 'Copied successfully',
-  }
+  },
 }
 
 export default translation

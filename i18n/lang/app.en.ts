@@ -1,29 +1,29 @@
 const translation = {
   common: {
-    welcome: "Welcome to use",
-    appUnavailable: "App is unavailable",
-    appUnkonwError: "App is unavailable",
-    optional: "Optional"
+    welcome: 'Welcome to use',
+    appUnavailable: 'App is unavailable',
+    appUnkonwError: 'App is unavailable',
+    optional: 'Optional',
   },
   generation: {
-    queryTitle: "Query content",
-    queryPlaceholder: "Write your query content...",
-    run: "RUN",
-    copy: "Copy",
-    title: "AI Completion",
-    noData: "AI will give you what you want here.",
+    queryTitle: 'Query content',
+    queryPlaceholder: 'Write your query content...',
+    run: 'RUN',
+    copy: 'Copy',
+    title: 'AI Completion',
+    noData: 'AI will give you what you want here.',
     privacyPolicyLeft:
-      "Please read the ",
+      'Please read the ',
     privacyPolicyMiddle:
-      "privacy policy",
+      'privacy policy',
     privacyPolicyRight:
-      " provided by the app developer.",
+      ' provided by the app developer.',
   },
   errorMessage: {
-    valueOfVarRequired: "Variables value can not be empty",
-    queryRequired: "Request text is required.",
-    waitForResponse: "Please wait for the response to the previous message to complete.",
+    valueOfVarRequired: 'Variables value can not be empty',
+    queryRequired: 'Request text is required.',
+    waitForResponse: 'Please wait for the response to the previous message to complete.',
   },
-};
+}
 
-export default translation;
+export default translation

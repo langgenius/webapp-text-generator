@@ -23,7 +23,7 @@ const translation = {
   },
   actionMsg: {
     copySuccessfully: '复制成功',
-  }
+  },
 }
 
 export default translation

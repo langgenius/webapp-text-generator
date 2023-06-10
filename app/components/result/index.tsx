@@ -1,15 +1,16 @@
 'use client'
-import React, { FC, useState } from 'react'
+import type { FC } from 'react'
+import React from 'react'
 import { useTranslation } from 'react-i18next'
 import cn from 'classnames'
+import copy from 'copy-to-clipboard'
+import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/outline'
 import { Markdown } from '@/app/components/base/markdown'
 import Loading from '@/app/components/base/loading'
-import copy from 'copy-to-clipboard'
 import Toast from '@/app/components/base/toast'
-import { Feedbacktype } from '@/types/app'
-import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/outline'
+import type { Feedbacktype } from '@/types/app'
 
-export interface IGenerationItemProps {
+export type IGenerationItemProps = {
   className?: string
   content: string
   messageId?: string | null
@@ -22,7 +23,7 @@ export interface IGenerationItemProps {
 
 export const SimpleBtn = ({ className, onClick, children }: {
   className?: string
-  onClick?: () => void,
+  onClick?: () => void
   children: React.ReactNode
 }) => (
   <div
@@ -53,93 +54,95 @@ const GenerationItem: FC<IGenerationItemProps> = ({
   isInWebApp = false,
   feedback,
   onFeedback,
-  isMobile
+  isMobile,
 }) => {
   const { t } = useTranslation()
 
   return (
     <div className={cn(className, 'rounded-xl border border-gray-200  bg-white')}
       style={{
-        boxShadow: '0px 1px 2px rgba(16, 24, 40, 0.05)'
+        boxShadow: '0px 1px 2px rgba(16, 24, 40, 0.05)',
       }}
     >
-      {isLoading ? (
-        <div className='flex items-center h-10'><Loading type='area' /></div>
-      ) : (
-        <div
-          className={cn('p-4')}
-        >
-          <Markdown content={content} />
-          {messageId && (
-            <div className='flex items-center justify-between mt-3'>
-              <div className='flex items-center'>
-                <SimpleBtn
-                  className={cn(isMobile && '!px-1.5', 'space-x-1')}
-                  onClick={() => {
-                    copy(content)
-                    Toast.notify({ type: 'success', message: t('common.actionMsg.copySuccessfully') })
-                  }}>
-                  {copyIcon}
-                  {!isMobile && <div>{t('common.operation.copy')}</div>}
-                </SimpleBtn>
-                {isInWebApp && (
-                  <>
-                    <div className="mx-3 w-[1px] h-[14px] bg-gray-200"></div>
-                    {!feedback?.rating && (
-                      <SimpleBtn className="!px-0">
-                        <>
-                          <div
-                            onClick={() => {
-                              onFeedback?.({
-                                rating: 'like'
-                              })
-                            }}
-                            className='flex w-6 h-6 items-center justify-center rounded-md cursor-pointer hover:bg-gray-100'>
-                            <HandThumbUpIcon width={16} height={16} />
-                          </div>
-                          <div
-                            onClick={() => {
-                              onFeedback?.({
-                                rating: 'dislike'
-                              })
-                            }}
-                            className='flex w-6 h-6 items-center justify-center rounded-md cursor-pointer hover:bg-gray-100'>
-                            <HandThumbDownIcon width={16} height={16} />
-                          </div>
-                        </>
-                      </SimpleBtn>
-                    )}
-                    {feedback?.rating === 'like' && (
-                      <div
-                        onClick={() => {
-                          onFeedback?.({
-                            rating: null
-                          })
-                        }}
-                        className='flex w-7 h-7 items-center justify-center rounded-md cursor-pointer  !text-primary-600 border border-primary-200 bg-primary-100 hover:border-primary-300 hover:bg-primary-200'>
-                        <HandThumbUpIcon width={16} height={16} />
-                      </div>
-                    )}
-                    {feedback?.rating === 'dislike' && (
-                      <div
-                        onClick={() => {
-                          onFeedback?.({
-                            rating: null
-                          })
-                        }}
-                        className='flex w-7 h-7 items-center justify-center rounded-md cursor-pointer  !text-red-600 border border-red-200 bg-red-100 hover:border-red-300 hover:bg-red-200'>
-                        <HandThumbDownIcon width={16} height={16} />
-                      </div>
-                    )}
-                  </>
-                )}
+      {isLoading
+        ? (
+          <div className='flex items-center h-10'><Loading type='area' /></div>
+        )
+        : (
+          <div
+            className={cn('p-4')}
+          >
+            <Markdown content={content} />
+            {messageId && (
+              <div className='flex items-center justify-between mt-3'>
+                <div className='flex items-center'>
+                  <SimpleBtn
+                    className={cn(isMobile && '!px-1.5', 'space-x-1')}
+                    onClick={() => {
+                      copy(content)
+                      Toast.notify({ type: 'success', message: t('common.actionMsg.copySuccessfully') })
+                    }}>
+                    {copyIcon}
+                    {!isMobile && <div>{t('common.operation.copy')}</div>}
+                  </SimpleBtn>
+                  {isInWebApp && (
+                    <>
+                      <div className="mx-3 w-[1px] h-[14px] bg-gray-200"></div>
+                      {!feedback?.rating && (
+                        <SimpleBtn className="!px-0">
+                          <>
+                            <div
+                              onClick={() => {
+                                onFeedback?.({
+                                  rating: 'like',
+                                })
+                              }}
+                              className='flex w-6 h-6 items-center justify-center rounded-md cursor-pointer hover:bg-gray-100'>
+                              <HandThumbUpIcon width={16} height={16} />
+                            </div>
+                            <div
+                              onClick={() => {
+                                onFeedback?.({
+                                  rating: 'dislike',
+                                })
+                              }}
+                              className='flex w-6 h-6 items-center justify-center rounded-md cursor-pointer hover:bg-gray-100'>
+                              <HandThumbDownIcon width={16} height={16} />
+                            </div>
+                          </>
+                        </SimpleBtn>
+                      )}
+                      {feedback?.rating === 'like' && (
+                        <div
+                          onClick={() => {
+                            onFeedback?.({
+                              rating: null,
+                            })
+                          }}
+                          className='flex w-7 h-7 items-center justify-center rounded-md cursor-pointer  !text-primary-600 border border-primary-200 bg-primary-100 hover:border-primary-300 hover:bg-primary-200'>
+                          <HandThumbUpIcon width={16} height={16} />
+                        </div>
+                      )}
+                      {feedback?.rating === 'dislike' && (
+                        <div
+                          onClick={() => {
+                            onFeedback?.({
+                              rating: null,
+                            })
+                          }}
+                          className='flex w-7 h-7 items-center justify-center rounded-md cursor-pointer  !text-red-600 border border-red-200 bg-red-100 hover:border-red-300 hover:bg-red-200'>
+                          <HandThumbDownIcon width={16} height={16} />
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                <div className='text-xs text-gray-500'>{content?.length} {t('common.unit.char')}</div>
               </div>
-              <div className='text-xs text-gray-500'>{content?.length} {t('common.unit.char')}</div>
-            </div>
-          )}
+            )}
 
-        </div>
-      )}
+          </div>
+        )}
     </div>
   )
 }

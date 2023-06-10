@@ -1,4 +1,4 @@
-import { Locale } from '@/i18n'
+import type { Locale } from '@/i18n'
 
 export type AppInfo = {
   title: string
@@ -9,31 +9,31 @@ export type AppInfo = {
 }
 
 export type PromptVariable = {
-  key: string,
-  name: string,
-  type: "string" | "number" | "select",
-  default?: string | number,
+  key: string
+  name: string
+  type: 'string' | 'number' | 'select'
+  default?: string | number
   required?: boolean
   options?: string[]
   max_length?: number
 }
 
 export type PromptConfig = {
-  prompt_template: string,
-  prompt_variables: PromptVariable[],
+  prompt_template: string
+  prompt_variables: PromptVariable[]
 }
 
 export type TextTypeFormItem = {
-  label: string,
-  variable: string,
+  label: string
+  variable: string
   required: boolean
   max_length: number
 }
 
 export type SelectTypeFormItem = {
-  label: string,
-  variable: string,
-  required: boolean,
+  label: string
+  variable: string
+  required: boolean
   options: string[]
 }
 /**

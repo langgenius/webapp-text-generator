@@ -9,11 +9,11 @@ Config app in `config/index.ts`.Please config:
 More config:
 ```js
 export const APP_INFO: AppInfo = {
-  "title": 'Chat APP',
-  "description": '',
-  "copyright": '',
-  "privacy_policy": '',
-  "default_language": 'zh-Hans'
+  title: 'Chat APP',
+  description: '',
+  copyright: '',
+  privacy_policy: '',
+  default_language: 'zh-Hans'
 }
 
 export const isShowPrompt = true

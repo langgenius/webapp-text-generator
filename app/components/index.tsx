@@ -1,24 +1,23 @@
 'use client'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import cn from 'classnames'
-import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { useBoolean, useClickAway } from 'ahooks'
+import { XMarkIcon } from '@heroicons/react/24/outline'
 import ConfigScence from './config-scence'
 import NoData from './no-data'
 import TextGenerationRes from './result'
+import Button from './base/button'
+import s from './style.module.css'
+import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { fetchAppParams, sendCompletionMessage, updateFeedback } from '@/service'
 import Toast from '@/app/components/base/toast'
-import { Feedbacktype, PromptConfig } from '@/types/app'
+import type { Feedbacktype, PromptConfig } from '@/types/app'
 import { changeLanguage } from '@/i18n/i18next-config'
 import Loading from '@/app/components/base/loading'
 import AppUnavailable from '@/app/components/app-unavailable'
-import { APP_ID, API_KEY, APP_INFO } from '@/config'
-import { XMarkIcon } from '@heroicons/react/24/outline'
-import Button from './base/button'
+import { API_KEY, APP_ID, APP_INFO } from '@/config'
 import { userInputsFormToPromptVariables } from '@/utils/prompt'
-
-import s from './style.module.css'
 
 const TextGeneration = () => {
   const { t } = useTranslation()
@@ -44,7 +43,7 @@ const TextGeneration = () => {
   const isNoData = !completionRes
   const [messageId, setMessageId] = useState<string | null>(null)
   const [feedback, setFeedback] = useState<Feedbacktype>({
-    rating: null
+    rating: null,
   })
 
   const handleFeedback = async (feedback: Feedbacktype) => {
@@ -95,7 +94,6 @@ const TextGeneration = () => {
       return false
     }
 
-
     const data = {
       inputs,
       query,
@@ -103,7 +101,7 @@ const TextGeneration = () => {
 
     setMessageId(null)
     setFeedback({
-      rating: null
+      rating: null,
     })
     setCompletionRes('')
 
@@ -123,7 +121,7 @@ const TextGeneration = () => {
       },
       onError() {
         setResponsingFalse()
-      }
+      },
     })
   }
 
@@ -164,14 +162,14 @@ const TextGeneration = () => {
   const [isShowResSidebar, { setTrue: showResSidebar, setFalse: hideResSidebar }] = useBoolean(false)
   const resRef = useRef<HTMLDivElement>(null)
   useClickAway(() => {
-    hideResSidebar();
+    hideResSidebar()
   }, resRef)
 
   const renderRes = (
     <div
       ref={resRef}
       className={
-        cn("flex flex-col h-full shrink-0",
+        cn('flex flex-col h-full shrink-0',
           isPC ? 'px-10 py-8' : 'bg-gray-50',
           isTablet && 'p-6', isMoble && 'p-4')}
     >
@@ -192,27 +190,29 @@ const TextGeneration = () => {
         </div>
 
         <div className='grow'>
-          {(isResponsing && !completionRes) ? (
-            <div className='flex h-full w-full justify-center items-center'>
-              <Loading type='area' />
-            </div>) : (
-            <>
-              {isNoData
-                ? <NoData />
-                : (
-                  <TextGenerationRes
-                    className='mt-3'
-                    content={completionRes}
-                    messageId={messageId}
-                    isInWebApp
-                    onFeedback={handleFeedback}
-                    feedback={feedback}
-                    isMobile={isMoble}
-                  />
-                )
-              }
-            </>
-          )}
+          {(isResponsing && !completionRes)
+            ? (
+              <div className='flex h-full w-full justify-center items-center'>
+                <Loading type='area' />
+              </div>)
+            : (
+              <>
+                {isNoData
+                  ? <NoData />
+                  : (
+                    <TextGenerationRes
+                      className='mt-3'
+                      content={completionRes}
+                      messageId={messageId}
+                      isInWebApp
+                      onFeedback={handleFeedback}
+                      feedback={feedback}
+                      isMobile={isMoble}
+                    />
+                  )
+                }
+              </>
+            )}
         </div>
       </>
     </div>
@@ -224,12 +224,11 @@ const TextGeneration = () => {
   if (!APP_INFO || !promptConfig)
     return <Loading type='app' />
 
-
   return (
     <>
       <div className={cn(isPC && 'flex', 'h-screen bg-gray-50')}>
         {/* Left */}
-        <div className={cn(isPC ? 'w-[600px] max-w-[50%] p-8' : 'p-4', "shrink-0 relative flex flex-col pb-10 h-full border-r border-gray-100 bg-white")}>
+        <div className={cn(isPC ? 'w-[600px] max-w-[50%] p-8' : 'p-4', 'shrink-0 relative flex flex-col pb-10 h-full border-r border-gray-100 bg-white')}>
           <div className='mb-6'>
             <div className='flex justify-between items-center'>
               <div className='flex items-center space-x-3'>
@@ -264,7 +263,6 @@ const TextGeneration = () => {
             />
           </div>
 
-
           {/* copyright */}
           <div className='fixed left-8 bottom-4  flex space-x-2 text-gray-400 font-normal text-xs'>
             <div className="">© {APP_INFO.copyright || APP_INFO.title} {(new Date()).getFullYear()}</div>
@@ -294,7 +292,7 @@ const TextGeneration = () => {
           <div
             className={cn('fixed z-50 inset-0', isTablet ? 'pl-[128px]' : 'pl-6')}
             style={{
-              background: 'rgba(35, 56, 118, 0.2)'
+              background: 'rgba(35, 56, 118, 0.2)',
             }}
           >
             {renderRes}
