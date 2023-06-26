@@ -8,7 +8,7 @@ const translation = {
   generation: {
     queryTitle: 'Query content',
     queryPlaceholder: 'Write your query content...',
-    run: 'RUN',
+    run: 'Execute',
     copy: 'Copy',
     title: 'AI Completion',
     noData: 'AI will give you what you want here.',

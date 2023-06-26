@@ -37,7 +37,6 @@ const TextGeneration = () => {
   const [inputs, setInputs] = useState<Record<string, any>>({})
   const [promptConfig, setPromptConfig] = useState<PromptConfig | null>(null)
   const [isResponsing, { setTrue: setResponsingTrue, setFalse: setResponsingFalse }] = useBoolean(false)
-  const [query, setQuery] = useState('')
   const [completionRes, setCompletionRes] = useState('')
   const { notify } = Toast
   const isNoData = !completionRes
@@ -89,14 +88,8 @@ const TextGeneration = () => {
     if (!checkCanSend())
       return
 
-    if (!query) {
-      logError(t('app.errorMessage.queryRequired'))
-      return false
-    }
-
     const data = {
       inputs,
-      query,
     }
 
     setMessageId(null)
@@ -135,7 +128,10 @@ const TextGeneration = () => {
         changeLanguage(APP_INFO.default_language)
 
         const { user_input_form }: any = await fetchAppParams()
-        const prompt_variables = userInputsFormToPromptVariables(user_input_form)
+        const prompt_variables = userInputsFormToPromptVariables(user_input_form).map(item => ({
+          ...item,
+          type: 'paragraph',
+        }))
 
         setPromptConfig({
           prompt_template: '',
@@ -257,8 +253,6 @@ const TextGeneration = () => {
               inputs={inputs}
               onInputsChange={setInputs}
               promptConfig={promptConfig}
-              query={query}
-              onQueryChange={setQuery}
               onSend={handleSend}
             />
           </div>
