@@ -11,7 +11,7 @@ export type AppInfo = {
 export type PromptVariable = {
   key: string
   name: string
-  type: 'string' | 'number' | 'select'
+  type: string
   default?: string | number
   required?: boolean
   options?: string[]
