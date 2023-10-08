@@ -17,6 +17,7 @@ const translation = {
     lineBreak: 'Line break',
     like: 'like',
     dislike: 'dislike',
+    download: 'Download',
   },
   unit: {
     char: 'chars',

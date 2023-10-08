@@ -1,149 +1,215 @@
 'use client'
 import type { FC } from 'react'
-import React from 'react'
-import { useTranslation } from 'react-i18next'
+import React, { useEffect, useRef, useState } from 'react'
+import { useBoolean } from 'ahooks'
+import { t } from 'i18next'
 import cn from 'classnames'
-import copy from 'copy-to-clipboard'
-import { HandThumbDownIcon, HandThumbUpIcon } from '@heroicons/react/24/outline'
-import { Markdown } from '@/app/components/base/markdown'
-import Loading from '@/app/components/base/loading'
+import NoData from '../no-data'
+import TextGenerationRes from './item'
 import Toast from '@/app/components/base/toast'
-import type { Feedbacktype } from '@/types/app'
-
-export type IGenerationItemProps = {
-  className?: string
-  content: string
-  messageId?: string | null
-  isLoading?: boolean
-  isInWebApp?: boolean
-  feedback?: Feedbacktype
-  onFeedback?: (feedback: Feedbacktype) => void
-  isMobile?: boolean
+import { sendCompletionMessage, updateFeedback } from '@/service'
+import type { Feedbacktype, PromptConfig } from '@/types/app'
+import Loading from '@/app/components/base/loading'
+export type IResultProps = {
+  isCallBatchAPI: boolean
+  isPC: boolean
+  isMobile: boolean
+  isError: boolean
+  promptConfig: PromptConfig | null
+  inputs: Record<string, any>
+  controlSend?: number
+  controlRetry?: number
+  controlStopResponding?: number
+  onShowRes: () => void
+  taskId?: number
+  onCompleted: (completionRes: string, taskId?: number, success?: boolean) => void
 }
 
-export const SimpleBtn = ({ className, onClick, children }: {
-  className?: string
-  onClick?: () => void
-  children: React.ReactNode
-}) => (
-  <div
-    className={cn(className, 'flex items-center h-7 px-3 rounded-md border border-gray-200 text-xs text-gray-700 font-medium  cursor-pointer hover:shadow-sm hover:border-gray-300')}
-    onClick={() => onClick?.()}
-  >
-    {children}
-  </div>
-)
-
-export const copyIcon = (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M9.3335 2.33341C9.87598 2.33341 10.1472 2.33341 10.3698 2.39304C10.9737 2.55486 11.4454 3.02657 11.6072 3.63048C11.6668 3.85302 11.6668 4.12426 11.6668 4.66675V10.0334C11.6668 11.0135 11.6668 11.5036 11.4761 11.8779C11.3083 12.2072 11.0406 12.4749 10.7113 12.6427C10.337 12.8334 9.84692 12.8334 8.86683 12.8334H5.1335C4.1534 12.8334 3.66336 12.8334 3.28901 12.6427C2.95973 12.4749 2.69201 12.2072 2.52423 11.8779C2.3335 11.5036 2.3335 11.0135 2.3335 10.0334V4.66675C2.3335 4.12426 2.3335 3.85302 2.39313 3.63048C2.55494 3.02657 3.02665 2.55486 3.63056 2.39304C3.8531 2.33341 4.12435 2.33341 4.66683 2.33341M5.60016 3.50008H8.40016C8.72686 3.50008 8.89021 3.50008 9.01499 3.4365C9.12475 3.38058 9.21399 3.29134 9.26992 3.18158C9.3335 3.05679 9.3335 2.89345 9.3335 2.56675V2.10008C9.3335 1.77338 9.3335 1.61004 9.26992 1.48525C9.21399 1.37549 9.12475 1.28625 9.01499 1.23033C8.89021 1.16675 8.72686 1.16675 8.40016 1.16675H5.60016C5.27347 1.16675 5.11012 1.16675 4.98534 1.23033C4.87557 1.28625 4.78634 1.37549 4.73041 1.48525C4.66683 1.61004 4.66683 1.77338 4.66683 2.10008V2.56675C4.66683 2.89345 4.66683 3.05679 4.73041 3.18158C4.78634 3.29134 4.87557 3.38058 4.98534 3.4365C5.11012 3.50008 5.27347 3.50008 5.60016 3.50008Z" stroke="#344054" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-
-const saveIcon = (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M11.0837 12.25L7.00033 9.33333L2.91699 12.25V2.91667C2.91699 2.60725 3.03991 2.3105 3.2587 2.09171C3.47749 1.87292 3.77424 1.75 4.08366 1.75H9.91699C10.2264 1.75 10.5232 1.87292 10.7419 2.09171C10.9607 2.3105 11.0837 2.60725 11.0837 2.91667V12.25Z" stroke="#344054" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-
-const GenerationItem: FC<IGenerationItemProps> = ({
-  className,
-  content,
-  messageId,
-  isLoading,
-  isInWebApp = false,
-  feedback,
-  onFeedback,
+const Result: FC<IResultProps> = ({
+  isCallBatchAPI,
+  isPC,
   isMobile,
+  isError,
+  promptConfig,
+  inputs,
+  controlSend,
+  controlRetry,
+  controlStopResponding,
+  onShowRes,
+  taskId,
+  onCompleted,
 }) => {
-  const { t } = useTranslation()
+  const [isResponsing, { setTrue: setResponsingTrue, setFalse: setResponsingFalse }] = useBoolean(false)
+  useEffect(() => {
+    if (controlStopResponding)
+      setResponsingFalse()
+  }, [controlStopResponding])
+
+  const [completionRes, doSetCompletionRes] = useState('')
+  const completionResRef = useRef('')
+  const setCompletionRes = (res: string) => {
+    completionResRef.current = res
+    doSetCompletionRes(res)
+  }
+  const getCompletionRes = () => completionResRef.current
+  const { notify } = Toast
+  const isNoData = !completionRes
+
+  const [messageId, setMessageId] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<Feedbacktype>({
+    rating: null,
+  })
+
+  const handleFeedback = async (feedback: Feedbacktype) => {
+    await updateFeedback({ url: `/messages/${messageId}/feedbacks`, body: { rating: feedback.rating } })
+    setFeedback(feedback)
+  }
+
+  const logError = (message: string) => {
+    notify({ type: 'error', message })
+  }
+
+  const checkCanSend = () => {
+    // batch will check outer
+    if (isCallBatchAPI)
+      return true
+
+    const prompt_variables = promptConfig?.prompt_variables
+    if (!prompt_variables || prompt_variables?.length === 0)
+      return true
+
+    let hasEmptyInput = ''
+    const requiredVars = prompt_variables?.filter(({ key, name, required }) => {
+      const res = (!key || !key.trim()) || (!name || !name.trim()) || (required || required === undefined || required === null)
+      return res
+    }) || [] // compatible with old version
+    requiredVars.forEach(({ key, name }) => {
+      if (hasEmptyInput)
+        return
+
+      if (!inputs[key])
+        hasEmptyInput = name
+    })
+
+    if (hasEmptyInput) {
+      logError(t('appDebug.errorMessage.valueOfVarRequired', { key: hasEmptyInput }))
+      return false
+    }
+    return !hasEmptyInput
+  }
+
+  const handleSend = async () => {
+    if (isResponsing) {
+      notify({ type: 'info', message: t('appDebug.errorMessage.waitForResponse') })
+      return false
+    }
+
+    if (!checkCanSend())
+      return
+
+    const data = {
+      inputs,
+    }
+
+    setMessageId(null)
+    setFeedback({
+      rating: null,
+    })
+    setCompletionRes('')
+
+    const res: string[] = []
+    let tempMessageId = ''
+
+    if (!isPC)
+      onShowRes()
+
+    setResponsingTrue()
+    const startTime = Date.now()
+    let isTimeout = false
+    const runId = setInterval(() => {
+      if (Date.now() - startTime > 1000 * 60) { // 1min timeout
+        clearInterval(runId)
+        setResponsingFalse()
+        onCompleted(getCompletionRes(), taskId, false)
+        isTimeout = true
+        console.log(`[#${taskId}]: timeout`)
+      }
+    }, 1000)
+    sendCompletionMessage(data, {
+      onData: (data: string, _isFirstMessage: boolean, { messageId }) => {
+        tempMessageId = messageId
+        res.push(data)
+        setCompletionRes(res.join(''))
+      },
+      onCompleted: () => {
+        if (isTimeout)
+          return
+
+        setResponsingFalse()
+        setMessageId(tempMessageId)
+        onCompleted(getCompletionRes(), taskId, true)
+        clearInterval(runId)
+      },
+      onError() {
+        if (isTimeout)
+          return
+
+        setResponsingFalse()
+        onCompleted(getCompletionRes(), taskId, false)
+        clearInterval(runId)
+      },
+    })
+  }
+
+  useEffect(() => {
+    if (controlSend)
+      handleSend()
+  }, [controlSend])
+
+  useEffect(() => {
+    if (controlRetry)
+      handleSend()
+  }, [controlRetry])
+
+  const renderTextGenerationRes = () => (
+    <TextGenerationRes
+      className='mt-3'
+      isError={isError}
+      onRetry={handleSend}
+      content={completionRes}
+      messageId={messageId}
+      isInWebApp
+      onFeedback={handleFeedback}
+      feedback={feedback}
+      isMobile={isMobile}
+      isLoading={isCallBatchAPI ? (!completionRes && isResponsing) : false}
+      taskId={isCallBatchAPI ? ((taskId as number) < 10 ? `0${taskId}` : `${taskId}`) : undefined}
+    />
+  )
 
   return (
-    <div className={cn(className, 'rounded-xl border border-gray-200  bg-white')}
-      style={{
-        boxShadow: '0px 1px 2px rgba(16, 24, 40, 0.05)',
-      }}
-    >
-      {isLoading
-        ? (
-          <div className='flex items-center h-10'><Loading type='area' /></div>
-        )
-        : (
-          <div
-            className={cn('p-4')}
-          >
-            <Markdown content={content} />
-            {messageId && (
-              <div className='flex items-center justify-between mt-3'>
-                <div className='flex items-center'>
-                  <SimpleBtn
-                    className={cn(isMobile && '!px-1.5', 'space-x-1')}
-                    onClick={() => {
-                      copy(content)
-                      Toast.notify({ type: 'success', message: t('common.actionMsg.copySuccessfully') })
-                    }}>
-                    {copyIcon}
-                    {!isMobile && <div>{t('common.operation.copy')}</div>}
-                  </SimpleBtn>
-                  {isInWebApp && (
-                    <>
-                      <div className="mx-3 w-[1px] h-[14px] bg-gray-200"></div>
-                      {!feedback?.rating && (
-                        <SimpleBtn className="!px-0">
-                          <>
-                            <div
-                              onClick={() => {
-                                onFeedback?.({
-                                  rating: 'like',
-                                })
-                              }}
-                              className='flex w-6 h-6 items-center justify-center rounded-md cursor-pointer hover:bg-gray-100'>
-                              <HandThumbUpIcon width={16} height={16} />
-                            </div>
-                            <div
-                              onClick={() => {
-                                onFeedback?.({
-                                  rating: 'dislike',
-                                })
-                              }}
-                              className='flex w-6 h-6 items-center justify-center rounded-md cursor-pointer hover:bg-gray-100'>
-                              <HandThumbDownIcon width={16} height={16} />
-                            </div>
-                          </>
-                        </SimpleBtn>
-                      )}
-                      {feedback?.rating === 'like' && (
-                        <div
-                          onClick={() => {
-                            onFeedback?.({
-                              rating: null,
-                            })
-                          }}
-                          className='flex w-7 h-7 items-center justify-center rounded-md cursor-pointer  !text-primary-600 border border-primary-200 bg-primary-100 hover:border-primary-300 hover:bg-primary-200'>
-                          <HandThumbUpIcon width={16} height={16} />
-                        </div>
-                      )}
-                      {feedback?.rating === 'dislike' && (
-                        <div
-                          onClick={() => {
-                            onFeedback?.({
-                              rating: null,
-                            })
-                          }}
-                          className='flex w-7 h-7 items-center justify-center rounded-md cursor-pointer  !text-red-600 border border-red-200 bg-red-100 hover:border-red-300 hover:bg-red-200'>
-                          <HandThumbDownIcon width={16} height={16} />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-                <div className='text-xs text-gray-500'>{content?.length} {t('common.unit.char')}</div>
-              </div>
-            )}
-
-          </div>
-        )}
+    <div className={cn(isNoData && !isCallBatchAPI && 'h-full')}>
+      {!isCallBatchAPI && (
+        (isResponsing && !completionRes)
+          ? (
+            <div className='flex h-full w-full justify-center items-center'>
+              <Loading type='area' />
+            </div>)
+          : (
+            <>
+              {isNoData
+                ? <NoData />
+                : renderTextGenerationRes()
+              }
+            </>
+          )
+      )}
+      {isCallBatchAPI && (
+        <div className='mt-2'>
+          {renderTextGenerationRes()}
+        </div>
+      )}
     </div>
   )
 }
-export default React.memo(GenerationItem)
+export default React.memo(Result)

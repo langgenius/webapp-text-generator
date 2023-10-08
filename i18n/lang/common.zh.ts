@@ -17,6 +17,7 @@ const translation = {
     lineBreak: '换行',
     like: '赞同',
     dislike: '反对',
+    download: '下载',
   },
   unit: {
     char: '个字符',
