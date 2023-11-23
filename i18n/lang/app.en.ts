@@ -48,6 +48,7 @@ const translation = {
     valueOfVarRequired: 'Variables value can not be empty',
     queryRequired: 'Request text is required.',
     waitForResponse: 'Please wait for the response to the previous message to complete.',
+    waitForImgUpload: 'Please wait for the image to upload',
   },
 }
 

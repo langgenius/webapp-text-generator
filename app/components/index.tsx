@@ -10,12 +10,13 @@ import ResDownload from './run-batch/res-download'
 import Result from './result'
 import Button from './base/button'
 import s from './style.module.css'
-import { AlertCircle } from './base/icons/src/vender/line/alertsAndFeedback'
+import AlertCircle from '@/app/components/base/icons/line/alert-circle'
 import TabHeader from '@/app/components/base/tab-header'
 import useBreakpoints, { MediaType } from '@/hooks/use-breakpoints'
 import { fetchAppParams, updateFeedback } from '@/service'
 import Toast from '@/app/components/base/toast'
-import type { Feedbacktype, PromptConfig } from '@/types/app'
+import type { Feedbacktype, PromptConfig, VisionFile, VisionSettings } from '@/types/app'
+import { Resolution, TransferMethod } from '@/types/app'
 import { changeLanguage } from '@/i18n/i18next-config'
 import Loading from '@/app/components/base/loading'
 import AppUnavailable from '@/app/components/app-unavailable'
@@ -106,6 +107,13 @@ const TextGeneration = () => {
   }
   const [controlSend, setControlSend] = useState(0)
   const [controlStopResponding, setControlStopResponding] = useState(0)
+  const [visionConfig, setVisionConfig] = useState<VisionSettings>({
+    enabled: false,
+    number_limits: 2,
+    detail: Resolution.low,
+    transfer_methods: [TransferMethod.local_file],
+  })
+  const [completionFiles, setCompletionFiles] = useState<VisionFile[]>([])
   const handleSend = async () => {
     setIsCallBatchAPI(false)
     setControlSend(Date.now())
@@ -338,13 +346,17 @@ const TextGeneration = () => {
       try {
         changeLanguage(APP_INFO.default_language)
 
-        const { user_input_form }: any = await fetchAppParams()
+        const { user_input_form, file_upload, system_parameters }: any = await fetchAppParams()
         const prompt_variables = userInputsFormToPromptVariables(user_input_form)
 
         setPromptConfig({
           prompt_template: '',
           prompt_variables,
         } as PromptConfig)
+        setVisionConfig({
+          ...file_upload.image,
+          image_file_size_limit: system_parameters?.image_file_size_limit || 0,
+        })
       }
       catch (e: any) {
         if (e.status === 404) {
@@ -383,6 +395,8 @@ const TextGeneration = () => {
       onShowRes={showResSidebar}
       taskId={task?.id}
       onCompleted={handleCompleted}
+      visionConfig={visionConfig}
+      completionFiles={completionFiles}
     />
   )
 
@@ -498,6 +512,8 @@ const TextGeneration = () => {
                 onInputsChange={setInputs}
                 promptConfig={promptConfig}
                 onSend={handleSend}
+                visionConfig={visionConfig}
+                onVisionFilesChange={setCompletionFiles}
               />
             </div>
             <div className={cn(isInBatchTab ? 'block' : 'hidden')}>

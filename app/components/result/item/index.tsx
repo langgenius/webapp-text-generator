@@ -12,8 +12,8 @@ import Loading from '@/app/components/base/loading'
 import Toast from '@/app/components/base/toast'
 import type { Feedbacktype } from '@/types/app'
 import { updateFeedback } from '@/service'
-import { Clipboard } from '@/app/components/base/icons/src/vender/line/files'
-import { RefreshCcw01 } from '@/app/components/base/icons/src/vender/line/arrows'
+import Clipboard from '@/app/components/base/icons/line/clipboard'
+import RefreshCcw01 from '@/app/components/base/icons/line/refresh-ccw-01'
 export type IGenerationItemProps = {
   className?: string
   isError: boolean

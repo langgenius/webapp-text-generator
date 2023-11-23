@@ -45,6 +45,7 @@ const translation = {
     valueOfVarRequired: '变量值必填',
     queryRequired: '主要文本必填',
     waitForResponse: '请等待上条信息响应完成',
+    waitForImgUpload: '请等待图片上传完成',
   },
 }
 

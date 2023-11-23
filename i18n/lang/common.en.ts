@@ -18,12 +18,23 @@ const translation = {
     like: 'like',
     dislike: 'dislike',
     download: 'Download',
+    ok: 'OK',
   },
   unit: {
     char: 'chars',
   },
   actionMsg: {
     copySuccessfully: 'Copied successfully',
+  },
+  imageUploader: {
+    uploadFromComputer: 'Upload from Computer',
+    uploadFromComputerReadError: 'Image reading failed, please try again.',
+    uploadFromComputerUploadError: 'Image upload failed, please upload again.',
+    uploadFromComputerLimit: 'Upload images cannot exceed {{size}} MB',
+    pasteImageLink: 'Paste image link',
+    pasteImageLinkInputPlaceholder: 'Paste image link here',
+    pasteImageLinkInvalid: 'Invalid image link',
+    imageUpload: 'Image Upload',
   },
 }
 

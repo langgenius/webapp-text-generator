@@ -9,7 +9,7 @@ import cn from 'classnames'
 import CSVReader from './csv-reader'
 import CSVDownload from './csv-download'
 import Button from '@/app/components/base/button'
-import { Loading02 } from '@/app/components/base/icons/src/vender/line/general'
+import Loading02 from '@/app/components/base/icons/line/loading-02'
 export type IRunBatchProps = {
   vars: { name: string }[]
   onSend: (data: string[][]) => void

@@ -8,7 +8,8 @@ import NoData from '../no-data'
 import TextGenerationRes from './item'
 import Toast from '@/app/components/base/toast'
 import { sendCompletionMessage, updateFeedback } from '@/service'
-import type { Feedbacktype, PromptConfig } from '@/types/app'
+import type { Feedbacktype, PromptConfig, VisionFile, VisionSettings } from '@/types/app'
+import { TransferMethod } from '@/types/app'
 import Loading from '@/app/components/base/loading'
 export type IResultProps = {
   isCallBatchAPI: boolean
@@ -23,6 +24,8 @@ export type IResultProps = {
   onShowRes: () => void
   taskId?: number
   onCompleted: (completionRes: string, taskId?: number, success?: boolean) => void
+  visionConfig: VisionSettings
+  completionFiles: VisionFile[]
 }
 
 const Result: FC<IResultProps> = ({
@@ -38,6 +41,8 @@ const Result: FC<IResultProps> = ({
   onShowRes,
   taskId,
   onCompleted,
+  visionConfig,
+  completionFiles,
 }) => {
   const [isResponsing, { setTrue: setResponsingTrue, setFalse: setResponsingFalse }] = useBoolean(false)
   useEffect(() => {
@@ -95,6 +100,10 @@ const Result: FC<IResultProps> = ({
       logError(t('appDebug.errorMessage.valueOfVarRequired', { key: hasEmptyInput }))
       return false
     }
+    if (completionFiles.find(item => item.transfer_method === TransferMethod.local_file && !item.upload_file_id)) {
+      notify({ type: 'info', message: t('appDebug.errorMessage.waitForImgUpload') })
+      return false
+    }
     return !hasEmptyInput
   }
 
@@ -107,8 +116,19 @@ const Result: FC<IResultProps> = ({
     if (!checkCanSend())
       return
 
-    const data = {
+    const data: Record<string, any> = {
       inputs,
+    }
+    if (visionConfig.enabled && completionFiles && completionFiles?.length > 0) {
+      data.files = completionFiles.map((item) => {
+        if (item.transfer_method === TransferMethod.local_file) {
+          return {
+            ...item,
+            url: '',
+          }
+        }
+        return item
+      })
     }
 
     setMessageId(null)

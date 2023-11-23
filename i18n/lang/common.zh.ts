@@ -18,12 +18,23 @@ const translation = {
     like: '赞同',
     dislike: '反对',
     download: '下载',
+    ok: '好的',
   },
   unit: {
     char: '个字符',
   },
   actionMsg: {
     copySuccessfully: '复制成功',
+  },
+  imageUploader: {
+    uploadFromComputer: '从本地上传',
+    uploadFromComputerReadError: '图片读取失败，请重新选择。',
+    uploadFromComputerUploadError: '图片上传失败，请重新上传。',
+    uploadFromComputerLimit: '上传图片不能超过 {{size}} MB',
+    pasteImageLink: '粘贴图片链接',
+    pasteImageLinkInputPlaceholder: '将图像链接粘贴到此处',
+    pasteImageLinkInvalid: '图片链接无效',
+    imageUpload: '图片上传',
   },
 }
 
