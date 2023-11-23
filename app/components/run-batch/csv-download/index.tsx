@@ -5,7 +5,7 @@ import {
   useCSVDownloader,
 } from 'react-papaparse'
 import { useTranslation } from 'react-i18next'
-import { Download02 as DownloadIcon } from '@/app/components/base/icons/src/vender/solid/general'
+import Download02 from '@/app/components/base/icons/solid/download-02'
 
 export type ICSVDownloadProps = {
   vars: { name: string }[]
@@ -59,7 +59,7 @@ const CSVDownload: FC<ICSVDownloadProps> = ({
         ]}
       >
         <div className='flex items-center h-[18px] space-x-1 text-[#155EEF] text-xs font-medium'>
-          <DownloadIcon className='w-3 h-3' />
+          <Download02 className='w-3 h-3' />
           <span>{t('app.generation.downloadTemplate')}</span>
         </div>
       </CSVDownloader>

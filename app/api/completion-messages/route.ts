@@ -5,9 +5,9 @@ export async function POST(request: NextRequest) {
   const body = await request.json()
   const {
     inputs,
-    query,
+    files,
   } = body
   const { user } = getInfo(request)
-  const res = await client.createCompletionMessage(inputs, query, user, true)
+  const res = await client.createCompletionMessage(inputs, user, true, files)
   return new Response(res.data as any)
 }
