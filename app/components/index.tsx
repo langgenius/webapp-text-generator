@@ -354,7 +354,7 @@ const TextGeneration = () => {
           prompt_variables,
         } as PromptConfig)
         setVisionConfig({
-          ...file_upload.image,
+          ...file_upload?.image,
           image_file_size_limit: system_parameters?.image_file_size_limit || 0,
         })
       }
