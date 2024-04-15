@@ -4,7 +4,7 @@ export const API_KEY = `${process.env.NEXT_PUBLIC_APP_KEY}`
 export const API_URL = `${process.env.NEXT_PUBLIC_API_URL}`
 export const APP_INFO: AppInfo = {
   title: 'RegressionAI API',
-  description: '',
+  description: 'provides stock price analysis , leveraging regression models to analyze financial and provided datasets to uncover correlations and perform predictive analysis',
   copyright: '',
   privacy_policy: '',
   default_language: 'en-US',
