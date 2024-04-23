@@ -3,15 +3,19 @@ import type { FC } from 'react'
 import React, { useEffect, useRef, useState } from 'react'
 import { useBoolean } from 'ahooks'
 import { t } from 'i18next'
+import produce from 'immer'
 import cn from 'classnames'
 import NoData from '../no-data'
 import TextGenerationRes from './item'
 import Toast from '@/app/components/base/toast'
-import { sendCompletionMessage, updateFeedback } from '@/service'
-import type { Feedbacktype, PromptConfig, VisionFile, VisionSettings } from '@/types/app'
-import { TransferMethod } from '@/types/app'
+import { sendCompletionMessage, sendWorkflowMessage, updateFeedback } from '@/service'
+import type { Feedbacktype, PromptConfig, VisionFile, VisionSettings, WorkflowProcess } from '@/types/app'
+import { NodeRunningStatus, TransferMethod, WorkflowRunningStatus } from '@/types/app'
 import Loading from '@/app/components/base/loading'
+import { sleep } from '@/utils'
+
 export type IResultProps = {
+  isWorkflow: boolean
   isCallBatchAPI: boolean
   isPC: boolean
   isMobile: boolean
@@ -29,6 +33,7 @@ export type IResultProps = {
 }
 
 const Result: FC<IResultProps> = ({
+  isWorkflow,
   isCallBatchAPI,
   isPC,
   isMobile,
@@ -57,6 +62,14 @@ const Result: FC<IResultProps> = ({
     doSetCompletionRes(res)
   }
   const getCompletionRes = () => completionResRef.current
+  const [workflowProcessData, doSetWorkflowProccessData] = useState<WorkflowProcess>()
+  const workflowProcessDataRef = useRef<WorkflowProcess>()
+  const setWorkflowProccessData = (data: WorkflowProcess) => {
+    workflowProcessDataRef.current = data
+    doSetWorkflowProccessData(data)
+  }
+  const getWorkflowProccessData = () => workflowProcessDataRef.current
+
   const { notify } = Toast
   const isNoData = !completionRes
 
@@ -144,41 +157,107 @@ const Result: FC<IResultProps> = ({
       onShowRes()
 
     setResponsingTrue()
-    const startTime = Date.now()
-    let isTimeout = false
-    const runId = setInterval(() => {
-      if (Date.now() - startTime > 1000 * 60) { // 1min timeout
-        clearInterval(runId)
+    let isEnd = false
+    let isTimeout = false;
+    (async () => {
+      await sleep(1000 * 60) // 1min timeout
+      if (!isEnd) {
         setResponsingFalse()
         onCompleted(getCompletionRes(), taskId, false)
         isTimeout = true
-        console.log(`[#${taskId}]: timeout`)
       }
-    }, 1000)
-    sendCompletionMessage(data, {
-      onData: (data: string, _isFirstMessage: boolean, { messageId }) => {
-        tempMessageId = messageId
-        res.push(data)
-        setCompletionRes(res.join(''))
-      },
-      onCompleted: () => {
-        if (isTimeout)
-          return
+    })()
 
-        setResponsingFalse()
-        setMessageId(tempMessageId)
-        onCompleted(getCompletionRes(), taskId, true)
-        clearInterval(runId)
-      },
-      onError() {
-        if (isTimeout)
-          return
+    if (isWorkflow) {
+      sendWorkflowMessage(
+        data,
+        {
+          onWorkflowStarted: ({ workflow_run_id }) => {
+            tempMessageId = workflow_run_id
+            setWorkflowProccessData({
+              status: WorkflowRunningStatus.Running,
+              tracing: [],
+              expand: false,
+            })
+            setResponsingFalse()
+          },
+          onNodeStarted: ({ data }) => {
+            setWorkflowProccessData(produce(getWorkflowProccessData()!, (draft) => {
+              draft.expand = true
+              draft.tracing!.push({
+                ...data,
+                status: NodeRunningStatus.Running,
+                expand: true,
+              } as any)
+            }))
+          },
+          onNodeFinished: ({ data }) => {
+            setWorkflowProccessData(produce(getWorkflowProccessData()!, (draft) => {
+              const currentIndex = draft.tracing!.findIndex(trace => trace.node_id === data.node_id)
+              if (currentIndex > -1 && draft.tracing) {
+                draft.tracing[currentIndex] = {
+                  ...(draft.tracing[currentIndex].extras
+                    ? { extras: draft.tracing[currentIndex].extras }
+                    : {}),
+                  ...data,
+                  expand: !!data.error,
+                } as any
+              }
+            }))
+          },
+          onWorkflowFinished: ({ data }) => {
+            if (isTimeout)
+              return
+            if (data.error) {
+              notify({ type: 'error', message: data.error })
+              setResponsingFalse()
+              onCompleted(getCompletionRes(), taskId, false)
+              isEnd = true
+              return
+            }
+            setWorkflowProccessData(produce(getWorkflowProccessData()!, (draft) => {
+              draft.status = data.error ? WorkflowRunningStatus.Failed : WorkflowRunningStatus.Succeeded
+            }))
+            if (!data.outputs)
+              setCompletionRes('')
+            else if (Object.keys(data.outputs).length > 1)
+              setCompletionRes(data.outputs)
+            else
+              setCompletionRes(data.outputs[Object.keys(data.outputs)[0]])
+            setResponsingFalse()
+            setMessageId(tempMessageId)
+            onCompleted(getCompletionRes(), taskId, true)
+            isEnd = true
+          },
+        },
+      )
+    }
+    else {
+      sendCompletionMessage(data, {
+        onData: (data: string, _isFirstMessage: boolean, { messageId }) => {
+          tempMessageId = messageId
+          res.push(data)
+          setCompletionRes(res.join(''))
+        },
+        onCompleted: () => {
+          if (isTimeout)
+            return
 
-        setResponsingFalse()
-        onCompleted(getCompletionRes(), taskId, false)
-        clearInterval(runId)
-      },
-    })
+          setResponsingFalse()
+          setMessageId(tempMessageId)
+          onCompleted(getCompletionRes(), taskId, true)
+          isEnd = true
+        },
+        onError() {
+          if (isTimeout)
+            return
+
+          setResponsingFalse()
+          onCompleted(getCompletionRes(), taskId, false)
+          isEnd = true
+        },
+      })
+    }
   }
 
   useEffect(() => {

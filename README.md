@@ -1,8 +1,11 @@
 # Text Generator Web App Template
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Config App
+
 Create a file named `.env.local` in the current directory and copy the contents from `.env.example`. Setting the following content:
+
 ```
 # APP ID
 NEXT_PUBLIC_APP_ID=
@@ -10,9 +13,13 @@ NEXT_PUBLIC_APP_ID=
 NEXT_PUBLIC_APP_KEY=
 # APP API URL
 NEXT_PUBLIC_API_URL=
+# APP type
+# true for workflow apps
+NEXT_PUBLIC_APP_TYPE_WORKFLOW=
 ```
 
-Config more in `config/index.ts` file:   
+Config more in `config/index.ts` file:
+
 ```js
 export const APP_INFO: AppInfo = {
   title: 'Chat APP',
@@ -27,7 +34,9 @@ export const promptTemplate = ''
 ```
 
 ## Getting Started
+
 First, install dependencies:
+
 ```bash
 npm install
 # or
