@@ -18,6 +18,7 @@
     "@heroicons/react": "^2.0.16",
     "@mdx-js/loader": "^2.3.0",
     "@mdx-js/react": "^2.3.0",
+    "@monaco-editor/react": "^4.6.0",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@types/node": "18.15.0",
     "@types/react": "18.0.28",

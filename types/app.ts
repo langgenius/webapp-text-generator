@@ -156,3 +156,9 @@ export type WorkflowProcess = {
   tracing: NodeTracing[]
   expand?: boolean // for UI
 }
+
+export enum CodeLanguage {
+  python3 = 'python3',
+  javascript = 'javascript',
+  json = 'json',
+}
