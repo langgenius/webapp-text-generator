@@ -20,6 +20,77 @@ const baseOptions = {
   redirect: 'follow',
 }
 
+export type WorkflowStartedResponse = {
+  task_id: string
+  workflow_run_id: string
+  event: string
+  data: {
+    id: string
+    workflow_id: string
+    sequence_number: number
+    created_at: number
+  }
+}
+
+export type WorkflowFinishedResponse = {
+  task_id: string
+  workflow_run_id: string
+  event: string
+  data: {
+    id: string
+    workflow_id: string
+    status: string
+    outputs: any
+    error: string
+    elapsed_time: number
+    total_tokens: number
+    total_steps: number
+    created_at: number
+    finished_at: number
+  }
+}
+
+export type NodeStartedResponse = {
+  task_id: string
+  workflow_run_id: string
+  event: string
+  data: {
+    id: string
+    node_id: string
+    node_type: string
+    index: number
+    predecessor_node_id?: string
+    inputs: any
+    created_at: number
+    extras?: any
+  }
+}
+
+export type NodeFinishedResponse = {
+  task_id: string
+  workflow_run_id: string
+  event: string
+  data: {
+    id: string
+    node_id: string
+    node_type: string
+    index: number
+    predecessor_node_id?: string
+    inputs: any
+    process_data: any
+    outputs: any
+    status: string
+    error: string
+    elapsed_time: number
+    execution_metadata: {
+      total_tokens: number
+      total_price: number
+      currency: string
+    }
+    created_at: number
+  }
+}
+
 export type IOnDataMoreInfo = {
   conversationId: string | undefined
   messageId: string
@@ -29,12 +100,20 @@ export type IOnDataMoreInfo = {
 export type IOnData = (message: string, isFirstMessage: boolean, moreInfo: IOnDataMoreInfo) => void
 export type IOnCompleted = () => void
 export type IOnError = (msg: string) => void
+export type IOnWorkflowStarted = (workflowStarted: WorkflowStartedResponse) => void
+export type IOnWorkflowFinished = (workflowFinished: WorkflowFinishedResponse) => void
+export type IOnNodeStarted = (nodeStarted: NodeStartedResponse) => void
+export type IOnNodeFinished = (nodeFinished: NodeFinishedResponse) => void
 
 type IOtherOptions = {
   needAllResponseContent?: boolean
   onData?: IOnData // for stream
   onError?: IOnError
   onCompleted?: IOnCompleted // for stream
+  onWorkflowStarted?: IOnWorkflowStarted
+  onWorkflowFinished?: IOnWorkflowFinished
+  onNodeStarted?: IOnNodeStarted
+  onNodeFinished?: IOnNodeFinished
 }
 
 function unicodeToChar(text: string) {
@@ -43,17 +122,25 @@ function unicodeToChar(text: string) {
   })
 }
 
-const handleStream = (response: any, onData: IOnData, onCompleted?: IOnCompleted) => {
+const handleStream = (
+  response: Response,
+  onData: IOnData,
+  onCompleted?: IOnCompleted,
+  onWorkflowStarted?: IOnWorkflowStarted,
+  onWorkflowFinished?: IOnWorkflowFinished,
+  onNodeStarted?: IOnNodeStarted,
+  onNodeFinished?: IOnNodeFinished,
+) => {
   if (!response.ok)
     throw new Error('Network response was not ok')
 
-  const reader = response.body.getReader()
+  const reader = response.body?.getReader()
   const decoder = new TextDecoder('utf-8')
   let buffer = ''
   let bufferObj: any
   let isFirstMessage = true
   function read() {
-    reader.read().then((result: any) => {
+    reader?.read().then((result: any) => {
       if (result.done) {
         onCompleted && onCompleted()
         return
@@ -74,13 +161,25 @@ const handleStream = (response: any, onData: IOnData, onCompleted?: IOnCompleted
             })
             return
           }
-          if (bufferObj.event !== 'message')
-            return
-          onData(unicodeToChar(bufferObj.answer), isFirstMessage, {
-            conversationId: bufferObj.conversation_id,
-            messageId: bufferObj.id,
-          })
-          isFirstMessage = false
+          if (bufferObj.event === 'message') {
+            onData(unicodeToChar(bufferObj.answer), isFirstMessage, {
+              conversationId: bufferObj.conversation_id,
+              messageId: bufferObj.id,
+            })
+            isFirstMessage = false
+          }
+          else if (bufferObj.event === 'workflow_started') {
+            onWorkflowStarted?.(bufferObj as WorkflowStartedResponse)
+          }
+          else if (bufferObj.event === 'workflow_finished') {
+            onWorkflowFinished?.(bufferObj as WorkflowFinishedResponse)
+          }
+          else if (bufferObj.event === 'node_started') {
+            onNodeStarted?.(bufferObj as NodeStartedResponse)
+          }
+          else if (bufferObj.event === 'node_finished') {
+            onNodeFinished?.(bufferObj as NodeFinishedResponse)
+          }
         })
         buffer = lines[lines.length - 1]
       }
@@ -212,7 +311,18 @@ export const upload = (fetchOptions: any): Promise<any> => {
   })
 }
 
-export const ssePost = (url: string, fetchOptions: any, { onData, onCompleted, onError }: IOtherOptions) => {
+export const ssePost = (
+  url: string,
+  fetchOptions: any,
+  {
+    onData,
+    onCompleted,
+    onError,
+    onWorkflowStarted,
+    onWorkflowFinished,
+    onNodeStarted,
+    onNodeFinished,
+  }: IOtherOptions) => {
   const options = Object.assign({}, baseOptions, {
     method: 'POST',
   }, fetchOptions)
@@ -242,9 +352,7 @@ export const ssePost = (url: string, fetchOptions: any, { onData, onCompleted, o
           return
         }
         onData?.(str, isFirstMessage, moreInfo)
-      }, () => {
-        onCompleted?.()
-      })
+      }, onCompleted, onWorkflowStarted, onWorkflowFinished, onNodeStarted, onNodeFinished)
     }).catch((e) => {
       Toast.notify({ type: 'error', message: e })
       onError?.(e)

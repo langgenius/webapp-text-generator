@@ -10,15 +10,21 @@ import { HashtagIcon } from '@heroicons/react/24/solid'
 import { Markdown } from '@/app/components/base/markdown'
 import Loading from '@/app/components/base/loading'
 import Toast from '@/app/components/base/toast'
-import type { Feedbacktype } from '@/types/app'
+import type { Feedbacktype, WorkflowProcess } from '@/types/app'
 import { updateFeedback } from '@/service'
 import Clipboard from '@/app/components/base/icons/line/clipboard'
 import RefreshCcw01 from '@/app/components/base/icons/line/refresh-ccw-01'
+import CodeEditor from '@/app/components/result/workflow/code-editor'
+import WorkflowProcessItem from '@/app/components/result/workflow/workflow-process'
+import { CodeLanguage } from '@/types/app'
+
 export type IGenerationItemProps = {
+  isWorkflow?: boolean
+  workflowProcessData?: WorkflowProcess
   className?: string
   isError: boolean
   onRetry: () => void
-  content: string
+  content: any
   messageId?: string | null
   isLoading?: boolean
   isInWebApp?: boolean
@@ -50,6 +56,8 @@ export const copyIcon = (
 )
 
 const GenerationItem: FC<IGenerationItemProps> = ({
+  isWorkflow,
+  workflowProcessData,
   className,
   isError,
   onRetry,
@@ -90,6 +98,7 @@ const GenerationItem: FC<IGenerationItemProps> = ({
     isLoading: isQuerying,
     feedback: childFeedback,
     isMobile,
+    isWorkflow,
   }
 
   const mainStyle = (() => {
@@ -136,12 +145,24 @@ const GenerationItem: FC<IGenerationItemProps> = ({
             }
             <div className='flex'>
               <div className='grow w-0'>
-                {isError
-                  ? <div className='text-gray-400 text-sm'>{t('app.generation.batchFailed.outputPlaceholder')}</div>
-                  : (
-                    <Markdown content={content} />
-                  )}
-
+                {workflowProcessData && (
+                  <WorkflowProcessItem grayBg hideInfo data={workflowProcessData} expand={workflowProcessData.expand} />
+                )}
+                {isError && (
+                  <div className='text-gray-400 text-sm'>{t('app.generation.batchFailed.outputPlaceholder')}</div>
+                )}
+                {!isError && (typeof content === 'string') && (
+                  <Markdown content={content} />
+                )}
+                {!isError && (typeof content !== 'string') && (
+                  <CodeEditor
+                    readOnly
+                    title={<div />}
+                    language={CodeLanguage.json}
+                    value={content}
+                    isJSONStringifyBeauty
+                  />
+                )}
               </div>
             </div>
 
@@ -151,7 +172,10 @@ const GenerationItem: FC<IGenerationItemProps> = ({
                   isDisabled={isError || !messageId}
                   className={cn(isMobile && '!px-1.5', 'space-x-1')}
                   onClick={() => {
-                    copy(content)
+                    if (typeof content === 'string')
+                      copy(content)
+                    else
+                      copy(JSON.stringify(content))
                     Toast.notify({ type: 'success', message: t('common.actionMsg.copySuccessfully') })
                   }}>
                   <Clipboard className='w-3.5 h-3.5' />
@@ -166,8 +190,8 @@ const GenerationItem: FC<IGenerationItemProps> = ({
                       <RefreshCcw01 className='w-3.5 h-3.5' />
                       {!isMobile && <div>{t('app.generation.batchFailed.retry')}</div>}
                     </SimpleBtn>}
-                    {!isError && messageId && <div className="mx-3 w-[1px] h-[14px] bg-gray-200"></div>}
-                    {!isError && messageId && !feedback?.rating && (
+                    {!isWorkflow && !isError && messageId && <div className="mx-3 w-[1px] h-[14px] bg-gray-200"></div>}
+                    {!isWorkflow && !isError && messageId && !feedback?.rating && (
                       <SimpleBtn className="!px-0">
                         <>
                           <div
@@ -191,7 +215,7 @@ const GenerationItem: FC<IGenerationItemProps> = ({
                         </>
                       </SimpleBtn>
                     )}
-                    {!isError && messageId && feedback?.rating === 'like' && (
+                    {!isWorkflow && !isError && messageId && feedback?.rating === 'like' && (
                       <div
                         onClick={() => {
                           onFeedback?.({
@@ -202,7 +226,7 @@ const GenerationItem: FC<IGenerationItemProps> = ({
                         <HandThumbUpIcon width={16} height={16} />
                       </div>
                     )}
-                    {!isError && messageId && feedback?.rating === 'dislike' && (
+                    {!isWorkflow && !isError && messageId && feedback?.rating === 'dislike' && (
                       <div
                         onClick={() => {
                           onFeedback?.({

@@ -20,7 +20,7 @@ import { Resolution, TransferMethod } from '@/types/app'
 import { changeLanguage } from '@/i18n/i18next-config'
 import Loading from '@/app/components/base/loading'
 import AppUnavailable from '@/app/components/app-unavailable'
-import { API_KEY, APP_ID, APP_INFO, DEFAULT_VALUE_MAX_LEN } from '@/config'
+import { API_KEY, APP_ID, APP_INFO, DEFAULT_VALUE_MAX_LEN, IS_WORKFLOW } from '@/config'
 import { userInputsFormToPromptVariables } from '@/utils/prompt'
 
 const GROUP_SIZE = 5 // to avoid RPM(Request per minute) limit. The group task finished then the next group.
@@ -383,6 +383,7 @@ const TextGeneration = () => {
 
   const renderRes = (task?: Task) => (
     <Result
+      isWorkflow={IS_WORKFLOW}
       isCallBatchAPI={isCallBatchAPI}
       isPC={isPC}
       isMobile={isMobile}
