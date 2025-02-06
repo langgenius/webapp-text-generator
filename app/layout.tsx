@@ -1,12 +1,12 @@
-"use client"; // Define como Client Component
+"use client"; // Certifica que o layout é um Client Component
 
-import "@/app/styles/globals.css"; // Importação corrigida
+import "@/app/styles/globals.css"; // Certifique-se de que esse caminho está correto
 
 import type { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-screen bg-red-500 text-white"> {/* TEMPORÁRIO: Mudar fundo para vermelho */}
+    <div className="flex h-screen bg-gray-900 text-white">
       {/* Menu lateral fixo */}
       <aside className="w-64 bg-gray-800 p-4 hidden md:flex flex-col border-r border-gray-700">
         <h1 className="text-xl font-semibold">Axys</h1>
@@ -22,8 +22,10 @@ export default function Layout({ children }: { children: ReactNode }) {
       {/* Área do Chat */}
       <main className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="w-full max-w-3xl bg-gray-800 p-6 rounded-lg shadow-lg">
-          <h2 className="text-white text-lg mb-4">Testando Layout</h2>
-          {children ? children : <p className="text-gray-400">Carregando...</p>}
+          <h2 className="text-white text-lg mb-4">TESTE FIXO - NÃO DEVE SUMIR</h2>
+          <p className="text-gray-400">Este texto deve permanecer visível.</p>
+          {/* Teste sem o children por enquanto */}
+          {/* {children} */}
         </div>
       </main>
     </div>
