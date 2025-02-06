@@ -16,16 +16,6 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   font-family: 'Inter', sans-serif;
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* 🏗️ Estrutura Principal */
-.container {
-  display: flex;
-  width: 100%;
-  height: 100%;
 }
 
 /* 📌 Menu Lateral */
@@ -34,27 +24,6 @@ body {
   background: var(--secondary-color);
   padding: 20px;
   border-right: 1px solid var(--border-color);
-}
-
-.sidebar h1 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.sidebar nav ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar nav ul li {
-  padding: 10px 0;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.sidebar nav ul li:hover {
-  color: var(--primary-color);
 }
 
 /* 🗨️ Área do Chat */
@@ -75,28 +44,6 @@ body {
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-/* 💬 Estilos das Mensagens */
-.chat-message {
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  max-width: 75%;
-}
-
-.chat-message.user {
-  background: var(--primary-color);
-  color: white;
-  text-align: right;
-  align-self: flex-end;
-}
-
-.chat-message.assistant {
-  background: #292929;
-  color: white;
-  text-align: left;
-  align-self: flex-start;
 }
 
 /* 📤 Entrada de Mensagens */
@@ -136,10 +83,6 @@ body {
   .sidebar {
     width: 60px;
     padding: 10px;
-  }
-
-  .sidebar h1 {
-    font-size: 1rem;
   }
 
   .chat-box {
