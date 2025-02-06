@@ -1,12 +1,12 @@
 "use client"; // Define como Client Component
 
-import "@/app/styles/globals.css"; // Caminho absoluto correto
+import "@/app/styles/globals.css"; // Importação corrigida
 
 import type { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-screen bg-gray-900 text-white">
+    <div className="flex h-screen bg-red-500 text-white"> {/* TEMPORÁRIO: Mudar fundo para vermelho */}
       {/* Menu lateral fixo */}
       <aside className="w-64 bg-gray-800 p-4 hidden md:flex flex-col border-r border-gray-700">
         <h1 className="text-xl font-semibold">Axys</h1>
