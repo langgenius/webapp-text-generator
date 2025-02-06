@@ -1,6 +1,6 @@
-"use client"; // Adiciona isso para transformar o componente em um Client Component
+"use client"; // Define como Client Component
 
-import "../styles/globals.css"; // Caminho corrigido
+import "../styles/globals.css"; // Caminho correto para o arquivo de estilos globais
 
 import type { ReactNode } from "react";
 
