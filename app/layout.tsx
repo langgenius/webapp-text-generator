@@ -1,6 +1,6 @@
 "use client"; // Garantindo que seja um Client Component
 import React from "react";
-import "@/app/styles/globals.css"; // Certifique-se de que o caminho está correto
+import "app/styles/globals.css"; // Certifique-se de que o caminho está correto
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
