@@ -1,6 +1,7 @@
-"use client"; // Adicionado para transformar em Client Component
+"use client"; // Adiciona isso para transformar o componente em um Client Component
 
-import "@/styles/global.css";
+import "../styles/globals.css"; // Caminho corrigido
+
 import type { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
