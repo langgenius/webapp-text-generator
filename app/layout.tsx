@@ -1,4 +1,4 @@
-import "@/styles/global.css";
+import "@/app/styles/globals.css";
 
 import type { ReactNode } from "react";
 
