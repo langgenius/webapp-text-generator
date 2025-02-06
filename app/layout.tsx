@@ -1,6 +1,6 @@
 "use client"; // Define como Client Component
 
-import "../styles/globals.css"; // Caminho correto para o arquivo de estilos globais
+import "@/app/styles/globals.css"; // Caminho absoluto correto
 
 import type { ReactNode } from "react";
 
