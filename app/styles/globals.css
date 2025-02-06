@@ -2,74 +2,147 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definições de Cores */
+/* 🎨 Definições Globais de Cores */
 :root {
   --background-color: #121212;
   --text-color: #ffffff;
   --primary-color: #1e88e5;
-  --secondary-color: #424242;
+  --secondary-color: #1c1c1c;
   --border-color: #333;
 }
 
-/* Estilização Global */
+/* 🌍 Estilos Globais */
 body {
   background-color: var(--background-color);
   color: var(--text-color);
   font-family: 'Inter', sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
 
-/* Ajuste dos Botões */
-button {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
+/* 🏗️ Estrutura Principal */
+.container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+/* 📌 Menu Lateral */
+.sidebar {
+  width: 250px;
+  background: var(--secondary-color);
+  padding: 20px;
+  border-right: 1px solid var(--border-color);
+}
+
+.sidebar h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar nav ul li {
+  padding: 10px 0;
   cursor: pointer;
   transition: 0.3s;
 }
 
-button:hover {
-  background-color: #1565c0;
+.sidebar nav ul li:hover {
+  color: var(--primary-color);
 }
 
-/* Caixas de Input */
-input, textarea {
-  background: var(--secondary-color);
-  color: var(--text-color);
-  border: 1px solid var(--border-color);
-  padding: 8px;
-  border-radius: 4px;
-}
-
-input::placeholder, textarea::placeholder {
-  color: #aaa;
-}
-
-/* Layout do Chat */
+/* 🗨️ Área do Chat */
 .chat-container {
-  max-width: 800px;
-  margin: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
-  background: var(--secondary-color);
-  border-radius: 10px;
+  background: var(--background-color);
 }
 
-/* Mensagens no Chat */
+.chat-box {
+  width: 100%;
+  max-width: 800px;
+  background: var(--secondary-color);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 💬 Estilos das Mensagens */
 .chat-message {
-  padding: 10px;
+  padding: 12px;
   border-radius: 8px;
   margin-bottom: 10px;
+  max-width: 75%;
 }
 
 .chat-message.user {
-  background: #1e88e5;
+  background: var(--primary-color);
   color: white;
   text-align: right;
+  align-self: flex-end;
 }
 
 .chat-message.assistant {
-  background: #424242;
+  background: #292929;
   color: white;
   text-align: left;
+  align-self: flex-start;
+}
+
+/* 📤 Entrada de Mensagens */
+.input-area {
+  display: flex;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.input-area input {
+  flex: 1;
+  background: var(--secondary-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  border-radius: 6px;
+  outline: none;
+}
+
+.input-area button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.input-area button:hover {
+  background-color: #1565c0;
+}
+
+/* 📱 Responsividade */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 60px;
+    padding: 10px;
+  }
+
+  .sidebar h1 {
+    font-size: 1rem;
+  }
+
+  .chat-box {
+    max-width: 100%;
+  }
 }
