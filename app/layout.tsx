@@ -1,25 +1,26 @@
-import { getLocaleOnServer } from '@/i18n/server'
+import type { ReactNode } from "react";
 
-import './styles/globals.css'
-import './styles/markdown.scss'
-
-const LocaleLayout = ({
-  children,
-}: {
-  children: React.ReactNode
-}) => {
-  const locale = getLocaleOnServer()
+export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang={locale ?? 'en'} className="h-full">
-      <body className="h-full">
-        <div className="overflow-x-auto">
-          <div className="w-screen h-screen min-w-[300px]">
-            {children}
-          </div>
-        </div>
-      </body>
-    </html>
-  )
-}
+    <div className="flex h-screen bg-gray-900 text-white">
+      {/* Menu lateral - Caso queira expandir no futuro */}
+      <aside className="w-64 bg-gray-800 p-4 hidden md:block border-r border-gray-700">
+        <h1 className="text-xl font-semibold">Axys</h1>
+        <nav className="mt-6">
+          <ul className="space-y-3">
+            <li className="cursor-pointer hover:text-gray-300">Início</li>
+            <li className="cursor-pointer hover:text-gray-300">Configurações</li>
+            <li className="cursor-pointer hover:text-gray-300">Sobre</li>
+          </ul>
+        </nav>
+      </aside>
 
-export default LocaleLayout
+      {/* Conteúdo principal (Chat) */}
+      <main className="flex-1 flex flex-col items-center justify-center px-6">
+        <div className="w-full max-w-3xl bg-gray-800 p-6 rounded-lg shadow-lg">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}
