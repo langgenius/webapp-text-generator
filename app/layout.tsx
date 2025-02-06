@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import "@/styles/globals.css"; // Certifique-se de que este caminho está correto
+import "../styles/globals.css"; // Caminho atualizado
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
