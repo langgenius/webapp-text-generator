@@ -1,5 +1,4 @@
-import "@/app/styles/globals.css";
-
+import "@/app/styles/globals.css"; 
 import type { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -18,7 +17,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* Área do Chat */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6">
+      <main className="flex-1 flex flex-col px-6 overflow-auto min-h-screen">
         <div className="w-full max-w-3xl bg-gray-800 p-6 rounded-lg shadow-lg">
           <h2 className="text-white text-lg mb-4">Testando Layout</h2>
           {children ? children : <p className="text-gray-400">Carregando...</p>}
