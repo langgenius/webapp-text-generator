@@ -1,7 +1,18 @@
 import "@/app/styles/globals.css"; 
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
+  if (!isLoaded) {
+    return <div className="flex items-center justify-center h-screen text-white">Carregando...</div>;
+  }
+
   return (
     <div className="flex h-screen bg-gray-900 text-white">
       {/* Menu lateral fixo */}
@@ -20,7 +31,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <main className="flex-1 flex flex-col px-6 overflow-auto min-h-screen">
         <div className="w-full max-w-3xl bg-gray-800 p-6 rounded-lg shadow-lg">
           <h2 className="text-white text-lg mb-4">Testando Layout</h2>
-          {children ? children : <p className="text-gray-400">Carregando...</p>}
+          {children ? children : <p className="text-gray-400">Carregando conteúdo...</p>}
         </div>
       </main>
     </div>
