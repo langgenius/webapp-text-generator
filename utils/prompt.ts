@@ -27,6 +27,9 @@ export const userInputsFormToPromptVariables = (useInputs: UserInputFormItem[] |
       if (item.number)
         return ['number', item.number]
 
+      if (item.file)
+        return ['file', item.file]
+
       return ['select', item.select]
     })()
     if (type === 'string' || type === 'paragraph') {
