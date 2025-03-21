@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+  webapp-text-generator:
+    container_name: webapp-text-generator
+    image: webapp-text-generator
+    build: .
+    ports:
+      - "3000:3000"
