@@ -39,7 +39,7 @@
     "js-cookie": "^3.0.1",
     "katex": "^0.16.7",
     "negotiator": "^0.6.3",
-    "next": "^14.3.0-canary.87",
+    "next": "^14.2.35",
     "react": "~19.1.4",
     "react-dom": "~19.1.4",
     "react-error-boundary": "^4.0.2",
