@@ -11,7 +11,7 @@ export const APP_INFO: AppInfo = {
   default_language: 'en-US',
 }
 
-export const API_PREFIX = '/api'
+export const API_PREFIX = `${process.env.NEXT_PUBLIC_API_PREFIX || '/api'}`
 
 export const LOCALE_COOKIE_NAME = 'locale'
 
